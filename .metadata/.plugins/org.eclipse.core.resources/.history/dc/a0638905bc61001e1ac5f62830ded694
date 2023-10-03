@@ -1,0 +1,5 @@
+package com.kmss.shop.controllers;
+
+public class ProductController {
+
+}

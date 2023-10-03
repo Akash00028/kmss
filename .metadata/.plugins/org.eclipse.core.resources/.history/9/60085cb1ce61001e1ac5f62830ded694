@@ -1,0 +1,5 @@
+package com.kmss.shop.exception;
+
+public class ResourseNotFoundException {
+
+}

@@ -1,0 +1,22 @@
+package com.kmss.shop.repositories;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import com.kmss.shop.entities.Approval;
+import com.kmss.shop.entities.Product;
+
+@Repository
+public interface ProductRepository extends JpaRepository<Product, Long>{
+//	List<Product> findByDateAtBetween(LocalDateTime startDate, LocalDateTime endDate);
+//	List<Product> findByName(String name);
+//	List<Product> findByPriceBetween(Double minPrice, Double maxPrice);
+//	@Query("SELECT p FROM Product p WHERE EXISTS (SELECT a FROM Approval a WHERE a.product = p AND a.status = 'Active') ORDER BY p.postedDate DESC")
+//	List<Product> findActiveProductsOrderByPostedDateDesc();
+	
+	  List<Product> findByApprovalsStatus(String status);
+}

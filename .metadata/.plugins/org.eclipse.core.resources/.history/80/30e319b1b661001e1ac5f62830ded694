@@ -1,0 +1,5 @@
+package com.kmss.shop.entities;
+
+public class Approval {
+
+}

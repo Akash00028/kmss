@@ -1,0 +1,58 @@
+package com.kmss.shop.services;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import com.kmss.shop.entities.Approval;
+import com.kmss.shop.entities.Product;
+import com.kmss.shop.repositories.ApprovalRepository;
+import com.kmss.shop.repositories.ProductRepository;
+
+@Service
+public class ProductService {
+	@Autowired
+	public ProductRepository productRepository;
+	
+	@Autowired
+	public ApprovalRepository approvalRepository;
+	
+	public List<Product> ListAllActiveProduct()
+	{
+		 return productRepository.findActiveProductsOrderByPostedDateDesc();
+    }
+	
+	@PostMapping
+    public ResponseEntity<String> createProduct(@RequestBody Product productRequest) {
+        // Validate the price
+        if (productRequest.getPrice() > 10000.0) {
+            return ResponseEntity.badRequest().body("Price exceeds $10,000");
+        }
+
+        
+        Product product = new Product();
+        product.setName(productRequest.getName());
+        product.setPrice(productRequest.getPrice());
+        product.setPostedDate(productRequest.getPostedDate());
+
+        
+        if (productRequest.getPrice() > 5000.0) {
+            Approval approval = new Approval();
+            approval.setRequestDate(LocalDateTime.now());
+            approval.setStatus("Pending");
+            approval.setProduct(product);
+            product.getApprovals().add(approval);
+        }
+
+        // Save the product to the database
+        productRepository.save(product);
+
+        return ResponseEntity.ok("Product created successfully");
+    }
+}

@@ -1,0 +1,5 @@
+package com.kmss.shop.repositories;
+
+public class ApprovalRepository {
+
+}

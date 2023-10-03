@@ -1,0 +1,5 @@
+package com.kmss.shop.services;
+
+public class ApprovalService {
+
+}

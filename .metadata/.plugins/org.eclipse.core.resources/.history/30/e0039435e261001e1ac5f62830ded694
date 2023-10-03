@@ -1,0 +1,96 @@
+package com.kmss.shop.controllers;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.kmss.shop.entities.Product;
+import com.kmss.shop.repositories.ProductRepository;
+import com.kmss.shop.services.ProductService;
+
+@RestController
+@RequestMapping("/api/products")
+public class ProductController {
+	@Autowired
+    private ProductService productService; // Inject your ProductService
+
+	@Autowired
+	private ProductRepository productRepository;
+	@GetMapping
+    public ResponseEntity<List<Product>> listActiveProducts() {
+        List<Product> activeProducts = productService.ListAllActiveProduct();
+        activeProducts.sort((p1, p2) -> p2.getPostedDate().compareTo(p1.getPostedDate()));
+        return ResponseEntity.ok(activeProducts);
+    }
+	
+	@PostMapping
+    public ResponseEntity<String> createProduct(@RequestBody Product productRequest) {
+        return productService.createProduct(productRequest);
+    }
+//	@GetMapping("/search")
+//	public List<Product> searchProducts(
+//	        @RequestParam(name = "productName", required = false) String productName,
+//	        @RequestParam(name = "minPrice", required = false) Double minPrice,
+//	        @RequestParam(name = "maxPrice", required = false) Double maxPrice,
+//	        @RequestParam(name = "minPostedDate", required = false) LocalDateTime minPostedDate,
+//	        @RequestParam(name = "maxPostedDate", required = false) LocalDateTime maxPostedDate
+//	    ) {
+//	        return productService.searchProducts(productName, minPrice, maxPrice, minPostedDate, maxPostedDate);
+//	    }
+	
+	
+	@PutMapping("/{id}")
+	public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product productDetail) {
+		return productService.update(id, productDetail);
+	}
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Map<String, Boolean>> deleteById(@PathVariable Long id) {
+		return productService.delete(id);
+	}
+	
+	@GetMapping("/approval-queue")
+    public ResponseEntity<List<Product>> listAllApprovalQueueProducts() {
+        List<Product> activeProducts = productService.ListAllApprovalQueueProduct();
+        activeProducts.sort((p1, p2) -> p2.getPostedDate().compareTo(p1.getPostedDate()));
+        return ResponseEntity.ok(activeProducts);
+    }
+	@PutMapping("/{approvalId}/approve")
+    public ResponseEntity<String> approveProduct(@PathVariable Long approvalId) {
+        String result = productService.approveProduct(approvalId);
+        return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/{approvalId}/reject")
+    public ResponseEntity<String> rejectProduct(@PathVariable Long approvalId) {
+        String result = productService.rejectProduct(approvalId);
+        return ResponseEntity.ok(result);
+    }
+    
+    public List<Product> searchProducts(
+            @RequestParam(required = false) String productName,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) LocalDateTime minPostedDate,
+            @RequestParam(required = false) LocalDateTime maxPostedDate) {
+
+        // You can build a dynamic JPA query based on the provided parameters
+        // Example: Find products by name, price range, and posted date range
+        List<Product> products = productRepository.findProductsByCriteria(
+                productName, minPrice, maxPrice, minPostedDate, maxPostedDate);
+
+        return products;
+    }
+	
+}

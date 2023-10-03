@@ -1,0 +1,27 @@
+package com.kmss.shop.services;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import com.kmss.shop.entities.Approval;
+import com.kmss.shop.entities.Product;
+import com.kmss.shop.repositories.ApprovalRepository;
+import com.kmss.shop.repositories.ProductRepository;
+
+@Service
+public class ProductService {
+	@Autowired
+	public ProductRepository productRepository;
+	
+	@Autowired
+	public ApprovalRepository approvalRepository;
+	
+	public ResponseEntity<List<Product>> ListAllActiveProduct()
+	{
+		 return productRepository.findByStatusOrderByPostedDateDesc(active);
+    }
+}
