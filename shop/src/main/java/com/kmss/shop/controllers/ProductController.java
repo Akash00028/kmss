@@ -21,63 +21,53 @@ import com.kmss.shop.repositories.ProductRepository;
 import com.kmss.shop.services.ProductService;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping
 public class ProductController {
 	@Autowired
-    private ProductService productService; // Inject your ProductService
+    private ProductService productService; 
 
 	@Autowired
 	private ProductRepository productRepository;
-	@GetMapping
+	
+	@GetMapping("/api/products")
     public ResponseEntity<List<Product>> listActiveProducts() {
         List<Product> activeProducts = productService.ListAllActiveProduct();
         activeProducts.sort((p1, p2) -> p2.getPostedDate().compareTo(p1.getPostedDate()));
         return ResponseEntity.ok(activeProducts);
     }
 	
-	@PostMapping
+	@PostMapping("/api/products")
     public ResponseEntity<String> createProduct(@RequestBody Product productRequest) {
         return productService.createProduct(productRequest);
     }
-//	@GetMapping("/search")
-//	public List<Product> searchProducts(
-//	        @RequestParam(name = "productName", required = false) String productName,
-//	        @RequestParam(name = "minPrice", required = false) Double minPrice,
-//	        @RequestParam(name = "maxPrice", required = false) Double maxPrice,
-//	        @RequestParam(name = "minPostedDate", required = false) LocalDateTime minPostedDate,
-//	        @RequestParam(name = "maxPostedDate", required = false) LocalDateTime maxPostedDate
-//	    ) {
-//	        return productService.searchProducts(productName, minPrice, maxPrice, minPostedDate, maxPostedDate);
-//	    }
 	
-	
-	@PutMapping("/{id}")
-	public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product productDetail) {
-		return productService.update(id, productDetail);
+	@PutMapping("/api/products/{productId}")
+	public Product update(@PathVariable Long productId, @RequestBody Product productDetail) {
+		return productService.update(productId, productDetail);
 	}
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/api/products/{id}")
 	public ResponseEntity<Map<String, Boolean>> deleteById(@PathVariable Long id) {
 		return productService.delete(id);
 	}
 	
-	@GetMapping("/approval-queue")
+	@GetMapping("/api/products/approval-queue")
     public ResponseEntity<List<Product>> listAllApprovalQueueProducts() {
         List<Product> activeProducts = productService.ListAllApprovalQueueProduct();
         activeProducts.sort((p1, p2) -> p2.getPostedDate().compareTo(p1.getPostedDate()));
         return ResponseEntity.ok(activeProducts);
     }
-	@PutMapping("/{approvalId}/approve")
+	@PutMapping("/api/products/{approvalId}/approve")
     public ResponseEntity<String> approveProduct(@PathVariable Long approvalId) {
         String result = productService.approveProduct(approvalId);
         return ResponseEntity.ok(result);
     }
 
-    @PutMapping("/{approvalId}/reject")
+    @PutMapping("/api/products/{approvalId}/reject")
     public ResponseEntity<String> rejectProduct(@PathVariable Long approvalId) {
         String result = productService.rejectProduct(approvalId);
         return ResponseEntity.ok(result);
     }
-    @GetMapping("/search")
+    @GetMapping("/api/products/search")
     public List<Product> searchProducts(
             @RequestParam(required = false) String productName,
             @RequestParam(required = false) Double minPrice,

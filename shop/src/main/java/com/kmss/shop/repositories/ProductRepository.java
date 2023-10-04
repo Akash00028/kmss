@@ -12,7 +12,8 @@ import com.kmss.shop.entities.Product;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long>{	
-	  List<Product> findByApprovalsStatus(String status);
+	 
+	// List<Product> findByApprovals_Status(String status);
 	  
 	  
 	  @Query("SELECT p FROM Product p " +

@@ -1,6 +1,6 @@
 package com.kmss.shop.services;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,24 +9,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-
-import com.kmss.shop.entities.Approval;
 import com.kmss.shop.entities.Product;
 import com.kmss.shop.exception.ResourseNotFoundException;
-import com.kmss.shop.repositories.ApprovalRepository;
 import com.kmss.shop.repositories.ProductRepository;
 
 @Service
 public class ProductService {
+	
 	@Autowired
 	public ProductRepository productRepository;
 	
-	@Autowired
-	public ApprovalRepository approvalRepository;
-	
 	
 	public List<Product> ListAllActiveProduct() {
-        return productRepository.findByApprovalsStatus("Active");
+		
+		List<Product> product = productRepository.findAll();
+		List<Product> activeProduct = new ArrayList<>();
+		for(Product pro: product)
+		{
+			if(pro.getStatus().equals("Active"))
+			{
+				activeProduct.add(pro);
+			}
+		}
+        return activeProduct ;
     }
 	
 	public ResponseEntity<String> createProduct(Product productRequest) {
@@ -41,31 +46,16 @@ public class ProductService {
         product.setPostedDate(productRequest.getPostedDate());
         
         if (productRequest.getPrice() > 5000.0) {
-            Approval approval = new Approval();
-            approval.setRequestDate(product.getPostedDate());
-            approval.setStatus("Pending");
-            approval.setProduct(product);
-            product.getApprovals().add(approval);
+            product.setStatus("Pending");
         } else {
-            Approval approval = new Approval();
-            approval.setRequestDate(product.getPostedDate());
-            approval.setStatus("Active");
-            approval.setProduct(product);
-            product.getApprovals().add(approval);
+            
+        	product.setStatus("Active");
         }
         productRepository.save(product);
 
         return ResponseEntity.ok("Product created successfully");
     }
 	
-//	public List<Product> searchProducts(
-//	        String productName, double minPrice, double maxPrice,
-//	        LocalDateTime minPostedDate, LocalDateTime maxPostedDate
-//	    ) {
-//	        return productRepository.findByActiveTrueAndNameContainingAndPriceBetweenAndPostedDateBetween(
-//	            productName, minPrice, maxPrice, minPostedDate, maxPostedDate
-//	        );
-//	    }
 	
 	public ResponseEntity<Product> getById(Long id)
 	{
@@ -73,30 +63,24 @@ public class ProductService {
 		return ResponseEntity.ok(product);
 		
 	}
-	public ResponseEntity<Product> update(Long id, Product productDetails)
-	{
-		Product product = productRepository.findById(id).orElseThrow(() -> new ResourseNotFoundException("Product With" + id +"not found"));
-		
-		Double previousPrice = product.getPrice();
-		Double newPrice = productDetails.getPrice();
+	
+	 public Product update(Long productId, Product productDetails) {
+		 Product product = productRepository.findById(productId).orElseThrow(() -> new ResourseNotFoundException("Product With" + productId +"not found"));
 
-	    if (newPrice > previousPrice * 1.5) {
-	        Approval approval = new Approval();
-	        approval.setRequestDate(LocalDateTime.now());
-	        approval.setStatus("Pending"); 
-	        approval.setProduct(product);
-	        product.getApprovals().add(approval);
-	        product.setPrice(newPrice);
-	    } else {
-	       
+	        Double previousPrice = product.getPrice();
+	        Double newPrice = productDetails.getPrice();
+	        String st = product.getStatus();
+	        if (newPrice > previousPrice * 1.5) {
+	            product.setStatus("Pending");
+	        }else
+	        {
+	        	product.setStatus(st);
+	        }
 	        product.setName(productDetails.getName());
 	        product.setPrice(newPrice);
+
+	        return productRepository.save(product);
 	    }
-	    productRepository.save(product);
-		
-		return ResponseEntity.ok(product);
-		
-	}
 	public ResponseEntity<Map<String, Boolean>> delete(Long id) {
 		Product product = productRepository.findById(id).orElseThrow(() -> new ResourseNotFoundException("Product With" + id +"not found"));
 		productRepository.delete(product);
@@ -106,24 +90,29 @@ public class ProductService {
 		return ResponseEntity.ok(response);
 	}
 	public List<Product> ListAllApprovalQueueProduct() {
-        return productRepository.findByApprovalsStatus("Pending");
+		List<Product> product = productRepository.findAll();
+		List<Product> activeProduct = new ArrayList<>();
+		for(Product pro: product)
+		{
+			if(pro.getStatus().equals("Pending"))
+			{
+				activeProduct.add(pro);
+			}
+		}
+        return activeProduct ;
     }
 	
-	 public String approveProduct(Long approvalId ) {
+	public String approveProduct(Long approvalId ) {
 	        Product product = productRepository.findById(approvalId).orElseThrow(() -> new ResourseNotFoundException("Product With" + approvalId +"not found"));
-	        Approval approval = new Approval();
-	        approval.setStatus("Active");     	
+	        product.setStatus("Active");
 	        productRepository.save(product);
 	        return "Product approved successfully.";
-	    }
+	 }
 
-	    public String rejectProduct(Long approvalId) {
-	    	Product product = productRepository.findById(approvalId).orElseThrow(() -> new ResourseNotFoundException("Product With" + approvalId +"not found"));
-	    	productRepository.delete(product);
-	        Approval approval = new Approval();
-	        
-	        approval.setStatus("Reject");     	
-	        productRepository.save(product);
-	        return "Product rejected successfully.";
-	    }
+    public String rejectProduct(Long approvalId) {
+    	Product product = productRepository.findById(approvalId).orElseThrow(() -> new ResourseNotFoundException("Product With" + approvalId +"not found"));	    	
+    	product.setStatus("Reject");
+    	productRepository.save(product);
+        return "Product rejected successfully.";
+    }
 }
