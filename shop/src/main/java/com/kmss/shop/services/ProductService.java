@@ -34,10 +34,10 @@ public class ProductService {
         return activeProduct ;
     }
 	
-	public ResponseEntity<String> createProduct(Product productRequest) {
+	public ResponseEntity<Product> createProduct(Product productRequest) {
         
         if (productRequest.getPrice() > 10000.0) {
-            return ResponseEntity.badRequest().body("Price exceeds $10,000");
+            return ResponseEntity.badRequest().body(productRequest);
         }
 
         Product product = new Product();
@@ -53,7 +53,7 @@ public class ProductService {
         }
         productRepository.save(product);
 
-        return ResponseEntity.ok("Product created successfully");
+        return ResponseEntity.ok(product);
     }
 	
 	

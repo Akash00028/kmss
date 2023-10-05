@@ -1,0 +1,19 @@
+<h2>Add Product</h2>
+<form (ngSubmit) = "OnSubmit()">
+
+    <div class="form-group">
+        <label > Product Name</label>
+        <input type="text" class ="form-control" id="name"  [(ngModel)]="product.name" name="name"/>
+    </div>
+    <div class="form-group">
+        <label > Price</label>
+        <input type="number" class ="form-control" id="price"  [(ngModel)]="product.price" name="price"/>
+    </div>
+    <div class="form-group">
+        <label > Posted Date</label>
+        <input type="datetime-local" class ="form-control" id="postedDate"  [(ngModel)]="product.postedDate" name="postedDate"/>
+    </div>
+   
+
+    <button class="btn btn-success" type ="submit">submit</button>
+</form>

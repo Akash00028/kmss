@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,7 @@ import com.kmss.shop.services.ProductService;
 
 @RestController
 @RequestMapping
+@CrossOrigin(origins = "http://localhost:4200")
 public class ProductController {
 	@Autowired
     private ProductService productService; 
@@ -37,9 +39,14 @@ public class ProductController {
     }
 	
 	@PostMapping("/api/products")
-    public ResponseEntity<String> createProduct(@RequestBody Product productRequest) {
+    public ResponseEntity<Product> createProduct(@RequestBody Product productRequest) {
         return productService.createProduct(productRequest);
     }
+	
+	@GetMapping("/api/products/{id}")
+	public ResponseEntity<Product> getById(@PathVariable Long id) {
+		return productService.getById(id);
+	}
 	
 	@PutMapping("/api/products/{productId}")
 	public Product update(@PathVariable Long productId, @RequestBody Product productDetail) {

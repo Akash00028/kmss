@@ -1,0 +1,21 @@
+<h2>Update Product</h2>
+<div>
+<form (submit) = "OnSubmit()">
+
+    <div class="form-group">
+        <label > Product Name</label>
+        <input type="text" class ="form-control" id="name"  [(ngModel)]="product.name" name="name" class="form-control"/>
+    </div>
+    <div class="form-group">
+        <label > Price</label>
+        <input type="number" class ="form-control" id="price"  [(ngModel)]="product.price" name="price" class="form-control"/>
+    </div>
+    <div class="form-group">
+        <label > Posted Date</label>
+        <input type="datetime-local" class ="form-control" id="postedDate"  [(ngModel)]="product.postedDate" name="postedDate" class="form-control"/>
+    </div>
+   
+
+    <button class="btn btn-success" type ="submit">submit</button>
+</form>
+</div>
